@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.ac.kopo.dao.AccountDAO">
+
+	<resultMap type="kr.ac.kopo.vo.AccountVO" id="accountMap">
+
+		<result column="PHONE_NUMBER" property="phoneNumber"/>
+		<result column="ACCOUNT_NUMBER" property="accountNumber"/>
+		<result column="ACCOUNT_PASSWORD" property="accountPassword"/>
+		<result column="BANK_CODE" property="bankCode"/>
+		<result column="BANK_REG_DATE" property="bankRegDate"/>
+		<result column="BALANCE" property="balance"/>
+		<result column="BANK_ALIAS" property="bankAlias"/>
+		<result column="TRANSFER_LIMIT" property="transferLimit"/>
+		<result column="NEW_ACCOUNT" property="newAccount"/>
+		<result column="HANA_POINT" property="hanaPoint"/>
+		<result column="OPEN_BANKING" property="openBanking"/>
+
+	</resultMap>
+	
+	<resultMap type="kr.ac.kopo.vo.TransactionVO" id="transactionMap">
+		<result column="TRAN_NUM" property="tranNum"/>
+		<result column="WITHDRAWAL_ACCOUNT_NUM" property="withdrawalAccountNum"/>
+		<result column="DEPOSIT_ACCOUNT_NUM" property="depositAccountNum"/>
+		<result column="WITHDRAWAL_NAME" property="withdrawalName"/>
+		<result column="DEPOSIT_NAME" property="depositName"/>
+		<result column="WITHDRAWAL_BANK_CODE" property="withdrawalBankCode"/>
+		<result column="DEPOSIT_BANK_CODE" property="depositBankCode"/>
+		<result column="WITHDRAWAL_PHONE_NUMBER" property="withdrawalPhoneNum"/>
+		<result column="DEPOSIT_PHONE_NUMBER" property="depositPhoneNum"/>
+		<result column="TRAN_AMOUNT" property="tranAmount"/>
+		<result column="TRAN_DATE" property="tranDate"/>
+		<result column="GUEST_GROUP" property="guestGroup"/>
+		<result column="MEMBER_TYPE" property="memberType"/>
+		<result column="RE_PAY" property="rePay"/>
+
+	</resultMap>
+
+	<insert id="insertAccount" parameterType="AccountVO">
+		insert into FINAL_ACCOUNT(NAME, PHONE_NUMBER, ACCOUNT_NUMBER, ACCOUNT_PASSWORD, BALANCE, BANK_ALIAS, TRANSFER_LIMIT)
+		values(#{name}, #{phoneNumber}, #{accountNumber}, #{accountPassword}, #{balance}, #{bankAlias}, #{transferLimit})
+	</insert>
+	
+		<insert id="newInsertAccount" parameterType="AccountVO">
+		insert into FINAL_ACCOUNT(PHONE_NUMBER, ACCOUNT_NUMBER, ACCOUNT_PASSWORD, BALANCE, BANK_ALIAS, TRANSFER_LIMIT, NEW_SUBSCRIBE)
+		values(#{phoneNumber}, #{accountNumber}, #{accountPassword}, #{balance}, #{bankAlias}, #{transferLimit}, 'Y')
+	</insert>
+	
+		
+	
+	<select id="selectByHanaBank"  parameterType="String" resultMap="accountMap" >
+		select * from final_account 
+		where phone_number = '${phoneNumber}'
+	</select>
+	
+	<select id="selectByKbBank"  parameterType="String" resultMap="accountMap" >
+		select * from final_account@JIHOON2_BANK 
+		where phone_number = '${phoneNumber}'
+	</select>
+	
+	<select id="selectByShinBank"  parameterType="String" resultMap="accountMap" >
+		select * from final_account@LEEJH_LINK 
+		where phone_number = '${phoneNumber}'
+	</select>
+	
+	<select id="selectByWooriBank"  parameterType="String" resultMap="accountMap" >
+		select * from final_account@HJIN_LINK where phone_number = '${phoneNumber}'
+	</select>
+	
+
+	<update id="senderHanaTransferProcess" parameterType="String">
+		update final_account set balance = balance - ${transferAmount}
+		where account_number = '${senderAccountNumber}'
+	</update>
+	
+	<update id="senderKbTransferProcess" parameterType="String">
+		update final_account@JIHOON2_BANK set balance = balance - ${transferAmount}
+		where account_number = '${senderAccountNumber}'
+	</update>
+	
+	<update id="senderShinTransferProcess" parameterType="String">
+		update final_account@LEEJH_LINK set balance = balance - ${transferAmount}
+		where account_number = '${senderAccountNumber}'
+	</update>
+	
+	<update id="senderWooriTransferProcess" parameterType="String">
+		update final_account@HJIN_LINK set balance = balance - ${transferAmount}
+		where account_number = '${senderAccountNumber}'
+	</update>
+	
+	<update id="receiverHanaTransferProcess" parameterType="String">
+		update final_account set balance = balance + ${transferAmount}
+		where account_number = '${receiverAccountNumber}'
+		
+	</update>
+	
+	<update id="receiverKbTransferProcess" parameterType="String">
+		update final_account@JIHOON2_BANK set balance = balance + ${transferAmount}
+		where account_number = '${receiverAccountNumber}'
+	</update>
+	
+	<update id="receiverShinTransferProcess" parameterType="String">
+		update final_account@LEEJH_LINK set balance = balance + ${transferAmount}
+		where account_number = '${receiverAccountNumber}'
+	</update>
+
+	<update id="receiverWooriTransferProcess" parameterType="String">
+		update final_account@HJIN_LINK set balance = balance + ${transferAmount}
+		where account_number = '${receiverAccountNumber}'
+	</update>	
+	
+	<insert id="insertHanaTransaction" statementType="CALLABLE" parameterType="map">
+		
+		{ CALL insert_sender_hana_transaction_2(
+			#{memberId},
+			#{phoneNumber},
+			#{senderAccountNumber},
+			#{receiverAccountNumber},
+			#{senderBankCode},
+			#{receiverBankCode},
+			#{transferAmount},
+			
+			#{memberType},
+			#{guestGroupSelector}
+			)
+		}
+	</insert>
+	
+	<insert id="insertKbTransaction" statementType="CALLABLE" parameterType="map">
+		
+		{ CALL insert_sender_kb_transaction_3(
+			#{memberId},
+			#{phoneNumber},
+			#{senderAccountNumber},
+			#{receiverAccountNumber},
+			#{senderBankCode},
+			#{receiverBankCode},
+			#{transferAmount},
+			
+			#{memberType},
+			#{guestGroupSelector}
+			)
+		}
+		
+	</insert>
+
+	<insert id="insertShinTransaction" statementType="CALLABLE" parameterType="map">
+		
+		{ CALL insert_sender_shin_transaction_5(
+			#{memberId},
+			#{phoneNumber},
+			#{senderAccountNumber},
+			#{receiverAccountNumber},
+			#{senderBankCode},
+			#{receiverBankCode},
+			#{transferAmount},
+			
+			#{memberType},
+			#{guestGroupSelector}
+			)
+		}
+		
+	</insert>
+	
+	<insert id="insertWooriTransaction" statementType="CALLABLE" parameterType="map">
+		
+		{ CALL insert_sender_woori_transaction_5(
+			#{memberId},
+			#{phoneNumber},
+			#{senderAccountNumber},
+			#{receiverAccountNumber},
+			#{senderBankCode},
+			#{receiverBankCode},
+			#{transferAmount},
+			
+			#{memberType},
+			#{guestGroupSelector}
+			)
+		}
+		
+	</insert>
+	
+	
+	
+	
+	
+	
+	
+	
+	<select id="selectBrideTransactionList"  parameterType="String" resultMap="transactionMap">
+	
+select TRAN_NUM, WITHDRAWAL_ACCOUNT_NUM,  DEPOSIT_ACCOUNT_NUM, WITHDRAWAL_NAME, DEPOSIT_NAME, decode(WITHDRAWAL_BANK_CODE, '2', '하나은행', decode(WITHDRAWAL_BANK_CODE, '9', '국민은행', decode(WITHDRAWAL_BANK_CODE, '14', '신한은행' , decode(WITHDRAWAL_BANK_CODE, '20', '우리은행', decode(WITHDRAWAL_BANK_CODE,'3','카카오'))))) as WITHDRAWAL_BANK_CODE, DEPOSIT_BANK_CODE, WITHDRAWAL_PHONE_NUMBER,  DEPOSIT_PHONE_NUMBER,  TRAN_AMOUNT,  TRAN_DATE, GUEST_GROUP, MEMBER_TYPE, RE_PAY 
+from FINAL_TRANSACTION_HISTORY
+	where DEPOSIT_PHONE_NUMBER = '${phoneNumber}'
+	
+	</select>
+	
+	
+	<select id="selectGroomTransactionList"  parameterType="String" resultMap="transactionMap">
+	
+select TRAN_NUM, WITHDRAWAL_ACCOUNT_NUM,  DEPOSIT_ACCOUNT_NUM, WITHDRAWAL_NAME, DEPOSIT_NAME, decode(WITHDRAWAL_BANK_CODE, '2', '하나은행', decode(WITHDRAWAL_BANK_CODE, '9', '국민은행', decode(WITHDRAWAL_BANK_CODE, '14', '신한은행' , decode(WITHDRAWAL_BANK_CODE, '20', '우리은행', decode(WITHDRAWAL_BANK_CODE,'3','카카오'))))) as WITHDRAWAL_BANK_CODE, DEPOSIT_BANK_CODE, WITHDRAWAL_PHONE_NUMBER,  DEPOSIT_PHONE_NUMBER,  TRAN_AMOUNT,  TRAN_DATE, GUEST_GROUP, MEMBER_TYPE, RE_PAY 
+from FINAL_TRANSACTION_HISTORY
+	where DEPOSIT_PHONE_NUMBER = '${phoneNumber}'
+	
+	</select>
+	
+	
+	<select id="selectGuestTransactionList"  parameterType="String" resultMap="transactionMap">
+	
+select TRAN_NUM, WITHDRAWAL_ACCOUNT_NUM,  DEPOSIT_ACCOUNT_NUM, WITHDRAWAL_NAME, DEPOSIT_NAME, decode(WITHDRAWAL_BANK_CODE, '2', '하나은행', decode(WITHDRAWAL_BANK_CODE, '9', '국민은행', decode(WITHDRAWAL_BANK_CODE, '14', '신한은행' , decode(WITHDRAWAL_BANK_CODE, '20', '우리은행')))) as WITHDRAWAL_BANK_CODE, DEPOSIT_BANK_CODE, WITHDRAWAL_PHONE_NUMBER,  DEPOSIT_PHONE_NUMBER,  TRAN_AMOUNT,  TRAN_DATE, GUEST_GROUP, MEMBER_TYPE, RE_PAY 
+from FINAL_TRANSACTION_HISTORY
+	where DEPOSIT_PHONE_NUMBER = '${phoneNumber}' or WITHDRAWAL_PHONE_NUMBER = '${phoneNumber}' 
+	
+	</select>
+	
+	<select id="selectManagerTransactionList" resultMap="transactionMap">
+	
+select
+TRAN_NUM, 
+SUBSTR(WITHDRAWAL_NAME, 0,1)||'*'||SUBSTR(WITHDRAWAL_NAME, 3,1) as WITHDRAWAL_NAME, 
+
+SUBSTR(DEPOSIT_NAME, 0,1)||'*'||SUBSTR(DEPOSIT_NAME, 3,1) as DEPOSIT_NAME, 
+
+SUBSTR(WITHDRAWAL_ACCOUNT_NUM, 0,2)||'*****-'||SUBSTR(WITHDRAWAL_ACCOUNT_NUM, 10) as WITHDRAWAL_ACCOUNT_NUM,
+
+SUBSTR(DEPOSIT_ACCOUNT_NUM, 0,2)||'*****-'||SUBSTR(DEPOSIT_ACCOUNT_NUM, 10) as DEPOSIT_ACCOUNT_NUM,
+
+decode(WITHDRAWAL_BANK_CODE, '2', '하나은행', decode(WITHDRAWAL_BANK_CODE, '9', '국민은행', decode(WITHDRAWAL_BANK_CODE, '14', '신한은행' , decode(WITHDRAWAL_BANK_CODE, '20', '우리은행')))) as WITHDRAWAL_BANK_CODE, decode(DEPOSIT_BANK_CODE, '2', '하나은행', decode(DEPOSIT_BANK_CODE, '9', '국민은행', decode(DEPOSIT_BANK_CODE, '14', '신한은행' , decode(DEPOSIT_BANK_CODE, '20', '우리은행')))) as DEPOSIT_BANK_CODE,
+
+SUBSTR(WITHDRAWAL_PHONE_NUMBER, 0,3)||'-****-'||SUBSTR(WITHDRAWAL_PHONE_NUMBER, 8) as WITHDRAWAL_PHONE_NUMBER,
+
+SUBSTR(DEPOSIT_PHONE_NUMBER, 0,3)||'-****-'||SUBSTR(DEPOSIT_PHONE_NUMBER, 8) as DEPOSIT_PHONE_NUMBER,
+
+TRAN_AMOUNT, TRAN_DATE     
+ 
+from FINAL_TRANSACTION_HISTORY
+	 
+</select>
+	
+	
+	
+
+	
+	<select id="selectGuestRePayList" parameterType="String" resultMap="transactionMap">
+	
+	select *
+	from FINAL_TRANSACTION_HISTORY
+	where WITHDRAWAL_ACCOUNT_NUM = '${accountNumber}'
+	
+	</select>
+	
+	
+	<update id="updateRePay"  parameterType="String">
+		
+		update FINAL_TRANSACTION_HISTORY set RE_PAY = '완료' 
+		where WITHDRAWAL_ACCOUNT_NUM = '${receiverAccountNumber}'
+	
+	</update>
+	
+	
+	<select id="myPageAccount" parameterType="String" resultMap="accountMap">
+	
+		select * from FINAL_ACCOUNT 
+		where PHONE_NUMBER = '${phoneNumber}'
+	
+	</select>
+	
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+</mapper>

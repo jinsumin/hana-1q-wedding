@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.ac.kopo.dao.BoardDAO">
+
+	<select id="selectAll"  resultType="BoardVO">
+		select * from BK_BOARD
+	</select>
+	
+	<insert id="insert" parameterType="BoardVO">
+		insert into BK_BOARD(no, title, content, writer) values(SEQBKBOARD.nextval, #{title}, #{writer},#{content})
+	</insert>
+	
+	<select id="selectByNo" parameterType="int" resultType="BoardVO">
+		select NO, TITLE, CONTENT, WRITER, to_char(REGDATE,'YYYY/MM/DD') REGDATE, VIEWCNT, REPLYCNT
+		from BK_BOARD where NO = #{boardNo}
+	</select>
+	
+	<update id="increaseReplyCnt" parameterType="int">
+		update BK_BOARD
+		set replyCnt = replyCnt + 1
+		where no = #{boardNo}
+	</update>
+	
+	<update id="decreaseReplyCnt" parameterType="int">
+		update BK_BOARD
+		set replyCnt = replyCnt - 1
+		where no = #{boardNo}
+	</update>
+	
+	<update id="increaseBoardViewCnt" parameterType="int">
+		update BK_BOARD
+		set viewCnt = viewCnt + 1
+		where no = #{boardNo}
+	</update>
+	
+
+	
+	
+
+
+</mapper>

@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.ac.kopo.dao.MemberDAO">
+
+	<resultMap type="kr.ac.kopo.vo.GuestGroupVO"
+		id="guestGroupMap">
+
+		<result column="MEMBER_TYPE" property="memberType" />
+		<result column="MEMBER_NAME" property="memberName" />
+		<result column="MEMBER_ID" property="memberId" />
+		<result column="MEMBER_PHONENUMBER"
+			property="memberPhoneNumber" />
+		<result column="FIRST_GUEST_GROUP" property="firstGuestGroup" />
+		<result column="SECOND_GUEST_GROUP" property="secondGuestGroup" />
+		<result column="THIRD_GUEST_GROUP" property="thirdGuestGroup" />
+		<result column="FOURTH_GUEST_GROUP" property="fourthGuestGroup" />
+		<result column="LAST_GUEST_GROUP" property="lastGuestGroup" />
+
+	</resultMap>
+
+	<resultMap type="kr.ac.kopo.vo.TransactionVO"
+		id="transactionMap">
+
+		<result column="TRAN_NUM" property="tranNum" />
+		<result column="WITHDRAWAL_ACCOUNT_NUM"
+			property="withdrawalAccountNum" />
+		<result column="DEPOSIT_ACCOUNT_NUM"
+			property="depositAccountNum" />
+		<result column="WITHDRAWAL_NAME" property="withdrawalName" />
+		<result column="DEPOSIT_NAME" property="depositName" />
+		<result column="WITHDRAWAL_BANK_CODE"
+			property="withdrawalBankCode" />
+		<result column="DEPOSIT_BANK_CODE" property="depositBankCode" />
+		<result column="WITHDRAWAL_PHONE_NUMBER"
+			property="withdrawalPhoneNum" />
+		<result column="DEPOSIT_PHONE_NUMBER"
+			property="depositPhoneNum" />
+		<result column="TRAN_AMOUNT" property="tranAmount" />
+		<result column="TRAN_DATE" property="tranDate" />
+		<result column="GUEST_GROUP" property="guestGroup" />
+		<result column="MEMBER_TYPE" property="memberType" />
+		<result column="RE_PAY" property="rePay" />
+
+	</resultMap>
+
+
+	<resultMap type="kr.ac.kopo.vo.AccountVO" id="accountMap">
+		<result column="PHONE_NUMBER" property="phoneNumber" />
+		<result column="ACCOUNT_NUMBER" property="accountNumber" />
+		<result column="ACCOUNT_PASSWORD" property="accountPassword" />
+		<result column="BANK_CODE" property="bankCode" />
+		<result column="BANK_REG_DATE" property="bankRegDate" />
+		<result column="BALANCE" property="balance" />
+		<result column="BANK_ALIAS" property="bankAlias" />
+		<result column="TRANSFER_LIMIT" property="transferLimit" />
+		<result column="NEW_ACCOUNT" property="newAccount" />
+	</resultMap>
+
+
+	<select id="login" parameterType="MemberVO"
+		resultType="MemberVO">
+		SELECT * FROM FINAL_MEMBER
+		WHERE ID=#{id} AND
+		PASSWORD=#{password}
+	</select>
+
+	<select id="getMember" parameterType="String"
+		resultType="MemberVO">
+		SELECT * FROM FINAL_MEMBER
+		WHERE
+		PHONENUMBER='${phonenumber}'
+	</select>
+
+
+	<select id="hanaPointVideo" parameterType="String"
+		resultType="MemberVO">
+
+		SELECT (A.TRAN_AMOUNT * 0.02) as HANAPOINT, (B.NAME) AS NAME,
+		(B.PHONENUMBER) AS PHONENUMBER
+		FROM FINAL_TRANSACTION_HISTORY A,
+		FINAL_MEMBER B
+		WHERE A.WITHDRAWAL_PHONE_NUMBER = '${phonenumber}' AND
+		B.VIDEO = 'Y'
+
+	</select>
+
+
+	<select id="hanaPointImage" parameterType="String"
+		resultType="MemberVO">
+
+		SELECT (A.TRAN_AMOUNT * 0.01) as HANAPOINT, (B.NAME) AS NAME,
+		(B.PHONENUMBER) AS PHONENUMBER
+		FROM FINAL_TRANSACTION_HISTORY A,
+		FINAL_MEMBER B
+		WHERE A.WITHDRAWAL_PHONE_NUMBER = '${phonenumber}' AND
+		B.IMAGE = 'Y'
+
+	</select>
+	
+	
+		<select id="hanaPointNewAccount" parameterType="String"
+		resultType="MemberVO">
+
+		SELECT (A.TRAN_AMOUNT * 0.03) as HANAPOINT, (B.NAME) AS NAME,
+		(B.PHONENUMBER) AS PHONENUMBER
+		FROM FINAL_TRANSACTION_HISTORY A,
+		FINAL_MEMBER B
+		WHERE A.WITHDRAWAL_PHONE_NUMBER = '${phonenumber}' AND
+		B.NEWACCOUNT = 'Y'
+
+	</select>
+
+
+
+
+
+
+
+	<update id="hanaPointUpdate" parameterType="MemberVO">
+
+		update
+		FINAL_MEMBER
+		set hanapoint = #{hanapoint}
+		where phonenumber = #{phonenumber}
+
+	</update>
+
+
+	<update id="hanaPointUpdateAccount" parameterType="MemberVO">
+
+		update
+		FINAL_ACCOUNT
+		set HANA_POINT = #{hanapoint}
+		where PHONE_NUMBER = #{phonenumber}
+
+	</update>
+
+
+	<update id="updateAgreeOpenBanking" parameterType="String">
+
+		update
+		FINAL_ACCOUNT
+		set OPEN_BANKING = '동의'
+		where PHONE_NUMBER = '${phonenumber}'
+
+	</update>
+
+
+	<select id="myPageMemberInfo" parameterType="String"
+		resultType="MemberVO">
+
+		select *
+		from FINAL_MEMBER
+		where phonenumber = '${phonenumber}'
+
+	</select>
+
+
+
+
+
+
+
+
+	<insert id="joinProcess" parameterType="MemberVO">
+		insert into
+		FINAL_MEMBER(no, name, id, password, phonenumber, sex)
+		values(seqmember.nextval, #{name}, #{id}, #{password}, #{phonenumber},
+		#{sex})
+	</insert>
+
+
+	<update id="agreeOpenBanking" parameterType="String">
+
+		update final_member
+		set openbanking = '동의'
+		where phonenumber = '${phoneNumber}'
+
+	</update>
+
+	<update id="agreeMarryGroom" parameterType="String">
+
+		update final_member
+		set type = '신랑'
+		where phonenumber = '${phoneNumber}'
+
+	</update>
+
+	<update id="agreeMarryBride" parameterType="String">
+
+		update final_member
+		set type = '신부'
+		where phonenumber = '${phoneNumber}'
+
+	</update>
+
+	<update id="updateGuestGroupType" parameterType="GuestGroupVO">
+
+		update
+		GUEST_GROUP
+		set MEMBER_TYPE = (#{memberType})
+		where MEMBER_PHONENUMBER
+		=(#{memberPhoneNumber})
+
+	</update>
+
+
+
+	<insert id="insertGuestGroup" parameterType="GuestGroupVO">
+
+		insert into
+		GUEST_GROUP(MEMBER_NAME, MEMBER_ID,
+		MEMBER_PHONENUMBER,
+		FIRST_GUEST_GROUP, SECOND_GUEST_GROUP,
+		THIRD_GUEST_GROUP,
+		FOURTH_GUEST_GROUP)
+		values(#{memberName}, #{memberId},
+		#{memberPhoneNumber}, #{firstGuestGroup},
+		#{secondGuestGroup},
+		#{thirdGuestGroup}, #{fourthGuestGroup} )
+	</insert>
+
+
+
+
+
+
+
+	<select id="selectGuestGroup" parameterType="String"
+		resultMap="guestGroupMap">
+
+		select * from guest_group
+		where member_phonenumber =
+		'${phoneNumber}'
+
+	</select>
+
+
+
+
+
+	<select id="selectGuestMoney" parameterType="String"
+		resultMap="transactionMap">
+
+		select WITHDRAWAL_NAME, TRAN_AMOUNT
+		from
+		FINAL_TRANSACTION_HISTORY
+		where guest_group = '${groupName}'
+
+	</select>
+
+	<select id="getGroupedGuestCount" resultType="map">
+
+		SELECT GUEST_GROUP,
+		COUNT(WITHDRAWAL_NAME) AS COUNT
+		FROM FINAL_TRANSACTION_HISTORY
+		GROUP BY
+		GUEST_GROUP
+
+	</select>
+
+
+	<select id="getGroupedGuestSum" resultType="map">
+
+		SELECT GUEST_GROUP,
+		SUM(TRAN_AMOUNT) AS COUNT
+		FROM FINAL_TRANSACTION_HISTORY
+		GROUP BY
+		GUEST_GROUP
+
+	</select>
+
+
+	<select id="getAccount" parameterType="String"
+		resultMap="accountMap">
+
+		select * from FINAL_ACCOUNT
+		where PHONE_NUMBER = '${phoneNumber}'
+
+	</select>
+
+
+	<update id="selectVideoMessage" parameterType="String">
+
+		update FINAL_MEMBER
+		set VIDEO = 'Y'
+		where phonenumber = '${phoneNumber}'
+
+	</update>
+
+	<update id="selectImageMessage" parameterType="String">
+
+		update FINAL_MEMBER
+		set IMAGE = 'Y'
+		where phonenumber = '${phoneNumber}'
+
+	</update>
+	
+	
+	
+<select id="unHanaTransactionList"  resultMap="transactionMap">
+	
+select
+TRAN_NUM, 
+SUBSTR(WITHDRAWAL_NAME, 0,1)||'*'||SUBSTR(WITHDRAWAL_NAME, 3,1) as WITHDRAWAL_NAME, 
+
+decode(WITHDRAWAL_BANK_CODE, '2', '하나은행', decode(WITHDRAWAL_BANK_CODE, '9', '국민은행', decode(WITHDRAWAL_BANK_CODE, '14', '신한은행' , decode(WITHDRAWAL_BANK_CODE, '20', '우리은행')))) as WITHDRAWAL_BANK_CODE, 
+
+SUBSTR(WITHDRAWAL_PHONE_NUMBER, 0,3)||'-****-'||SUBSTR(WITHDRAWAL_PHONE_NUMBER, 8) as WITHDRAWAL_PHONE_NUMBER,
+
+TRAN_AMOUNT, 
+
+TRAN_DATE     
+ 
+from FINAL_TRANSACTION_HISTORY
+where WITHDRAWAL_BANK_CODE != '2'
+		
+</select>
+
+
+
+<update id="updateNewAccount" parameterType="String">
+
+update FINAL_MEMBER
+set NEWACCOUNT = 'Y'
+where phonenumber = '${phoneNumber}'
+
+
+</update>
+
+
+<update id="updateNewAccountTable" parameterType="String">
+
+update FINAL_ACCOUNT
+set NEW_ACCOUNT = 'Y'
+where PHONE_NUMBER = '${phoneNumber}'
+
+
+</update>
+
+
+
+
+
+</mapper>
+  
+  
+  

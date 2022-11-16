@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.ac.kopo.dao.ReplyDAO">
+
+	<insert id="insert" parameterType="ReplyVO">
+	
+		insert into BK_REPLY_BOARD(no, board_no, content, writer) values(SEQBKREPLYBOARD.nextval, #{boardNo}, #{content}, #{writer})
+	
+	</insert>
+	
+	<select id="selectAll" parameterType="int" resultType="ReplyVO">
+		select no, board_no as boardNo, content, writer, to_char(regDate, 'YYYY/MM/DD') regDate from BK_REPLY_BOARD
+		where BOARD_NO = #{boardNo}
+	</select>
+	
+	<!-- 
+	<select id="selectReplyCnt" parameterType="int" resultType="int">
+		select count(*) from BK_REPLY_BOARD
+		where BOARD_NO = #{boardNo}
+	</select>
+	 -->
+	
+	<delete id="delete" parameterType="int">
+		delete from BK_REPLY_BOARD where no = #{replyNo}
+	</delete>
+
+</mapper>

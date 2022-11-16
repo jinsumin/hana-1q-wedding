@@ -1,0 +1,77 @@
+// Typography
+
+$title-font: 'Montserrat', sans-serif;
+$primary-font: 'Montserrat', sans-serif;
+$light: 300;
+$regular: 500;
+$bold: 700;
+$lsp: 0.03rem;
+$lsp-2x: 0.06rem;
+$lsp-big: 0.1rem;
+$lsp-extra: 0.25rem;
+
+// Color Palette
+
+$primary: #0ea3af;
+$primary-dark: #127072;
+$primary-gradient: linear-gradient(120deg, $primary 0%, #08BFC4 100%);
+$primary-transparent: rgba(14,163,175,0.95);
+$primary-transparent-2: rgba(14,163,175,0.75);
+$secondary: #e9edee;
+$secondary-dark: #c8cbcd;
+$secondary-gradient: linear-gradient(120deg, $secondary 0%, #fbfdfe 100%);
+$success: #56ce5a;
+$success-dark: #40a444;
+$success-gradient: linear-gradient(120deg, $success 0%, #9ef478 100%);
+$info: #2e9cf3;
+$info-dark: #1075c5;
+$info-gradient: linear-gradient(120deg, $info 0%, #69cffe 100%);
+$warning: #f66d42;
+$warning-dark: #cc451b;
+$warning-gradient: linear-gradient(120deg, $warning 0%, #f5ae68 100%);
+$danger: #f23729;
+$danger-dark: #c51609;
+$danger-gradient: linear-gradient(120deg, $danger 0%, #ff7c6e 100%);
+$light-body: #f7f7f7;
+$dark-body: #222;
+$light-grey: #fcfcfc;
+$light-grey-dark: #e3e3e3;
+$grey: #d0d2d3;
+$grey-dark: #8e9294;
+$grey-gradient: linear-gradient(120deg, $grey 0%, $light-grey-dark 100%);
+$dark-grey: #505254;
+$dark-grey-dark: #303132;
+$inverse-color: #232425;
+$title-color: #151617;
+$text-color: #515253;
+$white: #fff;
+$white-gradient: linear-gradient(120deg, $white 0%, $secondary 100%);
+$black: #000;
+$black-gradient: linear-gradient(120deg, $black 0%, $dark-grey 100%);
+
+// Social Colors
+
+$facebook: #4e68a1;
+$facebook-dark: #3b4f7a;
+$twitter: #65b5f2;
+$twitter-dark: #5294c6;
+$google: #e05d4b;
+$google-dark: #b94c3d;
+$linkedin: #2083bc;
+$linkedin-dark: #186592;
+$pinterest: #d2373b;
+$pinterest-dark: #ad2c2f;
+$dribbble: #ec5f94;
+$dribbble-dark: #b4446e;
+$instagram: #4c5fd7;
+$instagram-dark: #4252ba;
+$vimeo: #1ab7ea;
+$vimeo-dark: #0d91bc;
+$youtube: #e52d27;
+$youtube-dark: #b31217;
+$dropbox: #3d9ae8;
+$dropbox-dark: #2777bb;
+$behance: #053eff;
+$behance-dark: #062fbb;
+$skype: #00aff0;
+$skype-dark: #068bbd;
